@@ -66,13 +66,27 @@ on pat.pat_site_id = sm.Site_ID
 where vit.context_id is not NULL
 group by vitals_prov_id, vit.context_id, sm.site_orig_site_id
 
+--select vitals_height, vitals_weight from t_vitals vit
+--full outer join t_encounter enc
+--on vit.vitals_enc_id = enc.enc_id 
+--full outer join t_patient pat
+--on vit.vitals_patient_id = pat.pat_id
+--full outer join site_master sm
+--on pat.pat_site_id = sm.Site_ID
+--where vit.context_id is not NULL
+----and vitals_height is not NULL
+----and vitals_weight is NULL
+--and vit.context_id = 'A21A18F9-4CFF-40E5-99F8-4298D5034E0B'
+--and sm.site_orig_site_id = '3'
+
 ---------------- BP ----------------------
-select vitals_prov_id as provider,
-	context_id as context,
+select vit.context_id as context, 
+	vit.vitals_prov_id as provider,
+	sm.site_orig_site_id as site_id, 
 	avg(vitals_systolic) as ave_systolic,
-	stdev(vitals_systolic) as std_diastolic,
+	stdev(vitals_systolic) as std_systolic,
 	sum(case when vitals_systolic is NULL then 1 else 0 end) as systolic_null,
-	sum(case when (cast(vitals_systolic as int) % 10) = 0 and vitals_weight != 0 then 1 else 0 end) as mod_0,
+	sum(case when (cast(vitals_systolic as int) % 10) = 0 and vitals_systolic != 0 then 1 else 0 end) as mod_0,
 	sum(case when (cast(vitals_systolic as int) % 10) = 1 then 1 else 0 end) as mod_1,
 	sum(case when (cast(vitals_systolic as int) % 10) = 2 then 1 else 0 end) as mod_2,
 	sum(case when (cast(vitals_systolic as int) % 10) = 3 then 1 else 0 end) as mod_3,
@@ -83,16 +97,24 @@ select vitals_prov_id as provider,
 	sum(case when (cast(vitals_systolic as int) % 10) = 8 then 1 else 0 end) as mod_8,
 	sum(case when (cast(vitals_systolic as int) % 10) = 9 then 1 else 0 end) as mod_9,
 	count(*) as total_count
-from t_vitals
-group by vitals_prov_id, context_id
+from t_vitals vit
+full outer join t_encounter enc
+on vit.vitals_enc_id = enc.enc_id 
+full outer join t_patient pat
+on vit.vitals_patient_id = pat.pat_id
+full outer join site_master sm
+on pat.pat_site_id = sm.Site_ID
+where vit.context_id is not NULL
+group by vitals_prov_id, vit.context_id, sm.site_orig_site_id
 
 ---------------------------------------------------------------
-select vitals_prov_id as provider,
-	context_id as context,
+select vit.context_id as context, 
+	vit.vitals_prov_id as provider,
+	sm.site_orig_site_id as site_id, 
 	avg(vitals_diastolic) as ave_diastolic,
 	stdev(vitals_diastolic) as std_diastolic,
 	sum(case when vitals_diastolic is NULL then 1 else 0 end) as diastolic_null,
-	sum(case when (cast(vitals_diastolic as int) % 10) = 0 and vitals_weight != 0 then 1 else 0 end) as mod_0,
+	sum(case when (cast(vitals_diastolic as int) % 10) = 0 and vitals_diastolic != 0 then 1 else 0 end) as mod_0,
 	sum(case when (cast(vitals_diastolic as int) % 10) = 1 then 1 else 0 end) as mod_1,
 	sum(case when (cast(vitals_diastolic as int) % 10) = 2 then 1 else 0 end) as mod_2,
 	sum(case when (cast(vitals_diastolic as int) % 10) = 3 then 1 else 0 end) as mod_3,
@@ -103,6 +125,13 @@ select vitals_prov_id as provider,
 	sum(case when (cast(vitals_diastolic as int) % 10) = 8 then 1 else 0 end) as mod_8,
 	sum(case when (cast(vitals_diastolic as int) % 10) = 9 then 1 else 0 end) as mod_9,
 	count(*) as total_count
-from t_vitals
-group by vitals_prov_id, context_id
+from t_vitals vit
+full outer join t_encounter enc
+on vit.vitals_enc_id = enc.enc_id 
+full outer join t_patient pat
+on vit.vitals_patient_id = pat.pat_id
+full outer join site_master sm
+on pat.pat_site_id = sm.Site_ID
+where vit.context_id is not NULL
+group by vitals_prov_id, vit.context_id, sm.site_orig_site_id
 
